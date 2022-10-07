@@ -3,6 +3,7 @@ package fuzs.overflowingbars.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import fuzs.overflowingbars.OverflowingBars;
 import fuzs.overflowingbars.client.handler.ArmorBarRenderer;
+import fuzs.overflowingbars.client.handler.HealthBarRenderer;
 import fuzs.overflowingbars.client.handler.RowCountRenderer;
 import fuzs.overflowingbars.config.ClientConfig;
 import fuzs.puzzleslib.client.core.ClientCoreServices;
@@ -17,6 +18,7 @@ import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.client.gui.overlay.IGuiOverlay;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLConstructModEvent;
@@ -44,10 +46,25 @@ public class OverflowingBarsForgeClient {
                 }
                 evt.setCanceled(true);
             }
+            if (evt.getOverlay() == VanillaGuiOverlay.PLAYER_HEALTH.type()) {
+                Minecraft minecraft = Minecraft.getInstance();
+                ForgeGui gui = ((ForgeGui) minecraft.gui);
+                if (!minecraft.options.hideGui && gui.shouldDrawSurvivalElements()) {
+                    int posX = evt.getWindow().getGuiScaledWidth() / 2 - 91;
+                    int posY = evt.getWindow().getGuiScaledHeight() - gui.leftHeight;
+                    HealthBarRenderer.INSTANCE.renderPlayerHealth(evt.getPoseStack(), posX, posY, minecraft.player, minecraft.getProfiler());
+                    RowCountRenderer.drawBarRowCount(evt.getPoseStack(), posX - 2, posY, HealthBarRenderer.INSTANCE.getAllHearts(minecraft.player), true, minecraft.font);
+                    gui.leftHeight += 10;
+                }
+                evt.setCanceled(true);
+            }
         });
         MinecraftForge.EVENT_BUS.addListener((final CustomizeGuiOverlayEvent.Chat evt) -> {
             if (!OverflowingBars.CONFIG.get(ClientConfig.class).moveChatAboveArmor) return;
             evt.setPosY(evt.getPosY() - 10);
+        });
+        MinecraftForge.EVENT_BUS.addListener((final TickEvent.ClientTickEvent evt) -> {
+            if (evt.phase == TickEvent.Phase.START) HealthBarRenderer.INSTANCE.tick();
         });
     }
 
