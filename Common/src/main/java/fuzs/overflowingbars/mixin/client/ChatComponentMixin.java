@@ -1,6 +1,7 @@
 package fuzs.overflowingbars.mixin.client;
 
 import fuzs.overflowingbars.OverflowingBars;
+import fuzs.overflowingbars.client.handler.ChatOffsetHelper;
 import fuzs.overflowingbars.config.ClientConfig;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.ChatComponent;
@@ -14,6 +15,6 @@ abstract class ChatComponentMixin extends GuiComponent {
     @ModifyVariable(method = "screenToChatY", at = @At("LOAD"), ordinal = 0)
     private double overflowingbars$screenToChatY(double mouseY) {
         if (!OverflowingBars.CONFIG.get(ClientConfig.class).moveChatAboveArmor) return mouseY;
-        return mouseY + 10.0;
+        return mouseY + ChatOffsetHelper.getChatOffsetY();
     }
 }

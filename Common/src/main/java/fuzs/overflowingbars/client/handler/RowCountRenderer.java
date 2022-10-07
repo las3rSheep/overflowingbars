@@ -12,8 +12,12 @@ import net.minecraft.client.renderer.GameRenderer;
 public class RowCountRenderer {
 
     public static void drawBarRowCount(PoseStack poseStack, int posX, int posY, int barValue, boolean leftSide, Font font) {
-        boolean fullRowsCountOnly = OverflowingBars.CONFIG.get(ClientConfig.class).fullRowsCountOnly;
-        int rowCount = (barValue - 1) / 20 + (fullRowsCountOnly ? 0 : 1);
+        drawBarRowCount(poseStack, posX, posY, barValue, leftSide, 20, font);
+    }
+
+    public static void drawBarRowCount(PoseStack poseStack, int posX, int posY, int barValue, boolean leftSide, int maxRowCount, Font font) {
+        boolean fullRowsCountOnly = OverflowingBars.CONFIG.get(ClientConfig.class).countFullRowsOnly;
+        int rowCount = (barValue - 1) / maxRowCount + (fullRowsCountOnly ? 0 : 1);
         boolean forceFontRenderer = OverflowingBars.CONFIG.get(ClientConfig.class).forceFontRenderer;
         if (rowCount < (fullRowsCountOnly ? 1 : 2) || !forceFontRenderer && rowCount > 9) return;
         float alpha = (float) OverflowingBars.CONFIG.get(ClientConfig.class).rowCountAlpha;

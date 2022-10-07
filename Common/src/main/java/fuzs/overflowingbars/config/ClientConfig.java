@@ -18,5 +18,11 @@ public class ClientConfig implements ConfigCore {
     @Config(description = "Move chat messages above the armor bar.")
     public boolean moveChatAboveArmor = true;
     @Config(description = "Only include completely filled rows for the row count.")
-    public boolean fullRowsCountOnly = false;
+    public boolean countFullRowsOnly = false;
+    @Config(description = "Show colorful icons on the first row of armor icons, not just on all subsequent rows.")
+    public boolean colorizeFirstRow = true;
+    @Config(description = "Use vanilla's grey icons on all front rows, use custom colored icons on the second row.")
+    public boolean inverseColoring = true;
+    @Config(description = "Render a separate armor bar for the armor toughness attribute (from diamond and netherite armor).")
+    public boolean armorToughnessBar = true;
 }
