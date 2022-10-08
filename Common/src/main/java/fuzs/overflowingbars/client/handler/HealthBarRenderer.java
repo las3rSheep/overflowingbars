@@ -3,7 +3,6 @@ package fuzs.overflowingbars.client.handler;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import fuzs.overflowingbars.OverflowingBars;
-import fuzs.overflowingbars.client.OverflowingBarsClient;
 import fuzs.overflowingbars.config.ClientConfig;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
@@ -128,7 +127,7 @@ public class HealthBarRenderer {
         WITHERED(6, true),
         ABSORBING(8, false),
         FROZEN(9, false),
-        ORANGE(0, 2, 3, OverflowingBarsClient.OVERFLOWING_ICONS_LOCATION, true);
+        ORANGE(0, 2, 3, BarOverlayRenderer.OVERFLOWING_ICONS_LOCATION, true);
 
         private static ResourceLocation lastIconsSheet;
 

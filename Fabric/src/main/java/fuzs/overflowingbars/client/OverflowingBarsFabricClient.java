@@ -5,8 +5,7 @@ import fuzs.overflowingbars.api.client.event.CustomizeChatPanelCallback;
 import fuzs.overflowingbars.client.handler.HealthBarRenderer;
 import fuzs.overflowingbars.client.helper.ChatOffsetHelper;
 import fuzs.overflowingbars.config.ClientConfig;
-import fuzs.overflowingbars.intergration.AppleSkinIntegration;
-import fuzs.puzzleslib.client.core.ClientCoreServices;
+import fuzs.overflowingbars.integration.AppleSkinIntegration;
 import fuzs.puzzleslib.core.CoreServices;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -17,7 +16,6 @@ public class OverflowingBarsFabricClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        ClientCoreServices.FACTORIES.clientModConstructor(OverflowingBars.MOD_ID).accept(new OverflowingBarsClient());
         registerHandlers();
         registerIntegration();
     }

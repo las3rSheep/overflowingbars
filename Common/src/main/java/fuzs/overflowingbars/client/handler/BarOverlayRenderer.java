@@ -2,6 +2,7 @@ package fuzs.overflowingbars.client.handler;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import fuzs.overflowingbars.OverflowingBars;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
@@ -12,6 +13,7 @@ import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 
 public class BarOverlayRenderer {
+    static final ResourceLocation OVERFLOWING_ICONS_LOCATION = new ResourceLocation(OverflowingBars.MOD_ID, "textures/gui/icons.png");
 
     public static void renderHealthLevelBars(PoseStack poseStack, int screenWidth, int screenHeight, Minecraft minecraft, int leftHeight, boolean rowCount) {
         Player player = getCameraPlayer(minecraft);

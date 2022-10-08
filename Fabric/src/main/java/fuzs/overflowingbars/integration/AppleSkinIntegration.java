@@ -1,4 +1,4 @@
-package fuzs.overflowingbars.intergration;
+package fuzs.overflowingbars.integration;
 
 import squeek.appleskin.api.event.HUDOverlayEvent;
 

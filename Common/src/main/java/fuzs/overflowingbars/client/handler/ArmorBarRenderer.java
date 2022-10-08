@@ -2,7 +2,6 @@ package fuzs.overflowingbars.client.handler;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import fuzs.overflowingbars.OverflowingBars;
-import fuzs.overflowingbars.client.OverflowingBarsClient;
 import fuzs.overflowingbars.config.ClientConfig;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.util.Mth;
@@ -14,7 +13,7 @@ public class ArmorBarRenderer {
 
     public static void onRenderArmorBar(PoseStack poseStack, int posX, int posY, Player player, ProfilerFiller profiler, boolean unmodified) {
         profiler.push("armor");
-        BarOverlayRenderer.resetRenderState(OverflowingBarsClient.OVERFLOWING_ICONS_LOCATION);
+        BarOverlayRenderer.resetRenderState(BarOverlayRenderer.OVERFLOWING_ICONS_LOCATION);
         ClientConfig.ArmorRowConfig config = OverflowingBars.CONFIG.get(ClientConfig.class).armor;
         boolean inverse = !unmodified && config.inverseColoring;
         boolean skip = !unmodified && config.skipEmptyArmorPoints;
@@ -50,7 +49,7 @@ public class ArmorBarRenderer {
 
     public static void onRenderToughnessBar(PoseStack poseStack, int posX, int posY, Player player, ProfilerFiller profiler, boolean unmodified) {
         profiler.push("toughness");
-        BarOverlayRenderer.resetRenderState(OverflowingBarsClient.OVERFLOWING_ICONS_LOCATION);
+        BarOverlayRenderer.resetRenderState(BarOverlayRenderer.OVERFLOWING_ICONS_LOCATION);
         ClientConfig.ToughnessRowConfig config = OverflowingBars.CONFIG.get(ClientConfig.class).toughness;
         boolean inverse = !unmodified && config.inverseColoring;
         boolean skip = !unmodified && config.skipEmptyArmorPoints;

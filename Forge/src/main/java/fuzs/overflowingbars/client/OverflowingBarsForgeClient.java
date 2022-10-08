@@ -7,7 +7,6 @@ import fuzs.overflowingbars.client.handler.BarOverlayRenderer;
 import fuzs.overflowingbars.client.handler.HealthBarRenderer;
 import fuzs.overflowingbars.client.helper.ChatOffsetHelper;
 import fuzs.overflowingbars.config.ClientConfig;
-import fuzs.puzzleslib.client.core.ClientCoreServices;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.CustomizeGuiOverlayEvent;
@@ -41,7 +40,6 @@ public class OverflowingBarsForgeClient {
 
     @SubscribeEvent
     public static void onConstructMod(final FMLConstructModEvent evt) {
-        ClientCoreServices.FACTORIES.clientModConstructor(OverflowingBars.MOD_ID).accept(new OverflowingBarsClient());
         registerHandlers();
     }
 

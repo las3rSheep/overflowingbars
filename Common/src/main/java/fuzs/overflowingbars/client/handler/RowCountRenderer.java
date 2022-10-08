@@ -3,14 +3,15 @@ package fuzs.overflowingbars.client.handler;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import fuzs.overflowingbars.OverflowingBars;
-import fuzs.overflowingbars.client.OverflowingBarsClient;
 import fuzs.overflowingbars.config.ClientConfig;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 
 public class RowCountRenderer {
+    private static final ResourceLocation TINY_NUMBERS_LOCATION = new ResourceLocation(OverflowingBars.MOD_ID, "textures/font/tiny_numbers.png");
 
     public static void drawBarRowCount(PoseStack poseStack, int posX, int posY, int barValue, boolean leftSide, Font font) {
         drawBarRowCount(poseStack, posX, posY, barValue, leftSide, 20, font);
@@ -47,7 +48,7 @@ public class RowCountRenderer {
 
     private static void drawTinyRowCount(PoseStack poseStack, int posX, int posY, int count, float alpha, float red, float green, float blue) {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, OverflowingBarsClient.TINY_NUMBERS_LOCATION);
+        RenderSystem.setShaderTexture(0, TINY_NUMBERS_LOCATION);
         drawBorderedSprite(poseStack, 3, 5, posX, posY, 5 * count, 0, red, green, blue, alpha);
         if (OverflowingBars.CONFIG.get(ClientConfig.class).rowCount.rowCountX) {
             drawBorderedSprite(poseStack, 3, 5, posX + 4, posY, 0, 7, red, green, blue, alpha);
