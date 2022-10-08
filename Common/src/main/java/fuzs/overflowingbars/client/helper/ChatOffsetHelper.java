@@ -1,4 +1,4 @@
-package fuzs.overflowingbars.client.handler;
+package fuzs.overflowingbars.client.helper;
 
 import fuzs.overflowingbars.OverflowingBars;
 import fuzs.overflowingbars.config.ClientConfig;
@@ -18,7 +18,7 @@ public class ChatOffsetHelper {
         if (twoHealthRows(player)) {
             offset += 10;
         }
-        if (offset == 0.0 && OverflowingBars.CONFIG.get(ClientConfig.class).armorToughnessBar && Mth.floor(player.getAttributeValue(Attributes.ARMOR_TOUGHNESS)) > 0) {
+        if (offset == 0.0 && OverflowingBars.CONFIG.get(ClientConfig.class).toughness.armorToughnessBar && Mth.floor(player.getAttributeValue(Attributes.ARMOR_TOUGHNESS)) > 0) {
             offset += 10;
         }
         return offset;

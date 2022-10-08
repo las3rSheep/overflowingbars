@@ -16,22 +16,26 @@ public class RowCountRenderer {
     }
 
     public static void drawBarRowCount(PoseStack poseStack, int posX, int posY, int barValue, boolean leftSide, int maxRowCount, Font font) {
-        boolean fullRowsCountOnly = OverflowingBars.CONFIG.get(ClientConfig.class).countFullRowsOnly;
-        int rowCount = (barValue - 1) / maxRowCount + (fullRowsCountOnly ? 0 : 1);
-        boolean forceFontRenderer = OverflowingBars.CONFIG.get(ClientConfig.class).forceFontRenderer;
-        if (rowCount < (fullRowsCountOnly ? 1 : 2) || !forceFontRenderer && rowCount > 9) return;
-        float alpha = (float) OverflowingBars.CONFIG.get(ClientConfig.class).rowCountAlpha;
-        int textColor = OverflowingBars.CONFIG.get(ClientConfig.class).rowCountColor.getColor();
-        if (forceFontRenderer) {
-            String text = rowCount + "x";
+        ClientConfig config = OverflowingBars.CONFIG.get(ClientConfig.class);
+        if (maxRowCount == 0 || !config.rowCount.allowRendering) return;
+        int rowCount = (barValue - 1) / maxRowCount;
+        if (!config.rowCount.alwaysRenderRowCount && rowCount < 1) return;
+        if (rowCount < 1 || !config.rowCount.countFullRowsOnly) rowCount++;
+        int textColor = config.rowCount.rowCountColor.getColor();
+        if (config.rowCount.forceFontRenderer) {
+            String text = String.valueOf(rowCount);
+            if (config.rowCount.rowCountX) {
+                text += "x";
+            }
             if (leftSide) posX -= font.width(text);
-            drawBorderedText(poseStack, posX, posY + 1, text, textColor, (int) (alpha * 255.0F), font);
+            drawBorderedText(poseStack, posX, posY + 1, text, textColor, 255, font);
         } else {
+            if (rowCount > 9) return;
             float red = (textColor >> 16 & 255) / 255.0F;
             float green = (textColor >> 8 & 255) / 255.0F;
             float blue = (textColor >> 0 & 255) / 255.0F;
-            if (leftSide) posX -= 7;
-            drawTinyRowCount(poseStack, posX, posY + 2, rowCount, alpha, red, green, blue);
+            if (leftSide) posX -= config.rowCount.rowCountX ? 7 : 3;
+            drawTinyRowCount(poseStack, posX, posY + 2, rowCount, 1.0F, red, green, blue);
         }
     }
 
@@ -39,7 +43,9 @@ public class RowCountRenderer {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, OverflowingBarsClient.TINY_NUMBERS_LOCATION);
         drawBorderedSprite(poseStack, 3, 5, posX, posY, 5 * count, 0, red, green, blue, alpha);
-        drawBorderedSprite(poseStack, 3, 5, posX + 4, posY, 0, 7, red, green, blue, alpha);
+        if (OverflowingBars.CONFIG.get(ClientConfig.class).rowCount.rowCountX) {
+            drawBorderedSprite(poseStack, 3, 5, posX + 4, posY, 0, 7, red, green, blue, alpha);
+        }
     }
 
     private static void drawBorderedSprite(PoseStack poseStack, int width, int height, int posX, int posY, int textureX, int textureY, float red, float green, float blue, float alpha) {

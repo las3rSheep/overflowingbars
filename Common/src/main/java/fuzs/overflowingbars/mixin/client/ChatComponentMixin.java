@@ -1,7 +1,7 @@
 package fuzs.overflowingbars.mixin.client;
 
 import fuzs.overflowingbars.OverflowingBars;
-import fuzs.overflowingbars.client.handler.ChatOffsetHelper;
+import fuzs.overflowingbars.client.helper.ChatOffsetHelper;
 import fuzs.overflowingbars.config.ClientConfig;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.gui.components.ChatComponent;
