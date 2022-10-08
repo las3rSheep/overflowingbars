@@ -4,7 +4,10 @@ import fuzs.overflowingbars.OverflowingBars;
 import fuzs.overflowingbars.api.client.event.CustomizeChatPanelCallback;
 import fuzs.overflowingbars.client.handler.HealthBarRenderer;
 import fuzs.overflowingbars.client.helper.ChatOffsetHelper;
+import fuzs.overflowingbars.config.ClientConfig;
+import fuzs.overflowingbars.intergration.AppleSkinIntegration;
 import fuzs.puzzleslib.client.core.ClientCoreServices;
+import fuzs.puzzleslib.core.CoreServices;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 
@@ -16,6 +19,7 @@ public class OverflowingBarsFabricClient implements ClientModInitializer {
     public void onInitializeClient() {
         ClientCoreServices.FACTORIES.clientModConstructor(OverflowingBars.MOD_ID).accept(new OverflowingBarsClient());
         registerHandlers();
+        registerIntegration();
     }
 
     private static void registerHandlers() {
@@ -23,5 +27,12 @@ public class OverflowingBarsFabricClient implements ClientModInitializer {
         CustomizeChatPanelCallback.EVENT.register(posY -> {
             return OptionalInt.of(posY - (int) ChatOffsetHelper.getChatOffsetY());
         });
+    }
+
+    private static void registerIntegration() {
+        // configs are loaded early on Fabric so this is ok
+        if (OverflowingBars.CONFIG.get(ClientConfig.class).appleSkinIntegration && CoreServices.ENVIRONMENT.isModLoaded("appleskin")) {
+            AppleSkinIntegration.init();
+        }
     }
 }

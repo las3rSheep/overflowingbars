@@ -32,7 +32,7 @@ public class OverflowingBarsForgeClient {
             Minecraft minecraft = gui.getMinecraft();
             if (!minecraft.options.hideGui && gui.shouldDrawSurvivalElements()) {
                 RenderSystem.enableBlend();
-                BarOverlayRenderer.renderToughnessLevelBar(poseStack, screenWidth, screenHeight, minecraft, gui.rightHeight, OverflowingBars.CONFIG.get(ClientConfig.class).toughness.allowCount, OverflowingBars.CONFIG.get(ClientConfig.class).toughness.allowLayers);
+                BarOverlayRenderer.renderToughnessLevelBar(poseStack, screenWidth, screenHeight, minecraft, gui.rightHeight, OverflowingBars.CONFIG.get(ClientConfig.class).toughness.allowCount, !OverflowingBars.CONFIG.get(ClientConfig.class).toughness.allowLayers);
                 RenderSystem.disableBlend();
                 gui.rightHeight += 10;
             }

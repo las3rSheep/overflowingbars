@@ -6,6 +6,7 @@ import fuzs.overflowingbars.api.client.event.CustomizeChatPanelCallback;
 import fuzs.overflowingbars.client.handler.BarOverlayRenderer;
 import fuzs.overflowingbars.client.helper.ChatOffsetHelper;
 import fuzs.overflowingbars.config.ClientConfig;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiComponent;
@@ -46,7 +47,9 @@ abstract class GuiMixin extends GuiComponent {
     @Inject(method = "renderHearts", at = @At("HEAD"), cancellable = true)
     private void overflowingBars$renderHearts(PoseStack poseStack, Player player, int x, int y, int height, int i, float f, int j, int k, int l, boolean bl, CallbackInfo callback) {
         if (OverflowingBars.CONFIG.get(ClientConfig.class).health.allowLayers) {
-            BarOverlayRenderer.renderHealthLevelBars(poseStack, this.screenWidth, this.screenHeight, this.minecraft, 39, OverflowingBars.CONFIG.get(ClientConfig.class).health.allowCount);
+            int leftHeight = 39;
+            leftHeight += FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance ? distance : 0;
+            BarOverlayRenderer.renderHealthLevelBars(poseStack, this.screenWidth, this.screenHeight, this.minecraft, leftHeight, OverflowingBars.CONFIG.get(ClientConfig.class).health.allowCount);
             BarOverlayRenderer.resetRenderState();
             callback.cancel();
         }
@@ -56,7 +59,9 @@ abstract class GuiMixin extends GuiComponent {
     private int overflowingBars$renderPlayerHealth(int armorValue, PoseStack poseStack) {
         ClientConfig.ArmorRowConfig config = OverflowingBars.CONFIG.get(ClientConfig.class).armor;
         if (config.allowLayers || OverflowingBars.CONFIG.get(ClientConfig.class).health.allowLayers) {
-            BarOverlayRenderer.renderArmorLevelBar(poseStack, this.screenWidth, this.screenHeight, this.minecraft, 39 + this.overflowingBars$getArmorBarLeftHeight(this.getCameraPlayer()), config.allowCount, !config.allowLayers);
+            int leftHeight = 39 + this.overflowingBars$getArmorBarLeftHeight(this.getCameraPlayer());
+            leftHeight += FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance ? distance : 0;
+            BarOverlayRenderer.renderArmorLevelBar(poseStack, this.screenWidth, this.screenHeight, this.minecraft, leftHeight, config.allowCount, !config.allowLayers);
             BarOverlayRenderer.resetRenderState();
             return 0;
         }
@@ -79,6 +84,7 @@ abstract class GuiMixin extends GuiComponent {
             rightHeight += 10;
         }
         rightHeight += config.toughnessBarRowShift * 10;
+        rightHeight += FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance ? distance : 0;
         BarOverlayRenderer.renderToughnessLevelBar(poseStack, this.screenWidth, this.screenHeight, this.minecraft, rightHeight, config.allowCount, !config.allowLayers);
         BarOverlayRenderer.resetRenderState();
     }
