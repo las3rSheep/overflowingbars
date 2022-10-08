@@ -46,7 +46,7 @@ abstract class GuiMixin extends GuiComponent {
     @Inject(method = "renderHearts", at = @At("HEAD"), cancellable = true)
     private void overflowingBars$renderHearts(PoseStack poseStack, Player player, int x, int y, int height, int i, float f, int j, int k, int l, boolean bl, CallbackInfo callback) {
         if (OverflowingBars.CONFIG.get(ClientConfig.class).health.allowLayers) {
-            BarOverlayRenderer.renderHealthLevelBars(poseStack, this.screenWidth, this.screenHeight, this.minecraft, 39);
+            BarOverlayRenderer.renderHealthLevelBars(poseStack, this.screenWidth, this.screenHeight, this.minecraft, 39, OverflowingBars.CONFIG.get(ClientConfig.class).health.allowCount);
             BarOverlayRenderer.resetRenderState();
             callback.cancel();
         }
@@ -54,9 +54,9 @@ abstract class GuiMixin extends GuiComponent {
 
     @ModifyVariable(method = "renderPlayerHealth", at = @At("STORE"), ordinal = 11, slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;getArmorValue()I"), to = @At(value = "FIELD", target = "Lnet/minecraft/world/effect/MobEffects;REGENERATION:Lnet/minecraft/world/effect/MobEffect;")))
     private int overflowingBars$renderPlayerHealth(int armorValue, PoseStack poseStack) {
-        boolean allowArmorLayers = OverflowingBars.CONFIG.get(ClientConfig.class).armor.allowLayers;
-        if (allowArmorLayers || OverflowingBars.CONFIG.get(ClientConfig.class).health.allowLayers) {
-            BarOverlayRenderer.renderArmorLevelBar(poseStack, this.screenWidth, this.screenHeight, this.minecraft, 39 + this.overflowingBars$getArmorBarLeftHeight(this.getCameraPlayer()), !allowArmorLayers);
+        ClientConfig.ArmorRowConfig config = OverflowingBars.CONFIG.get(ClientConfig.class).armor;
+        if (config.allowLayers || OverflowingBars.CONFIG.get(ClientConfig.class).health.allowLayers) {
+            BarOverlayRenderer.renderArmorLevelBar(poseStack, this.screenWidth, this.screenHeight, this.minecraft, 39 + this.overflowingBars$getArmorBarLeftHeight(this.getCameraPlayer()), config.allowCount, !config.allowLayers);
             BarOverlayRenderer.resetRenderState();
             return 0;
         }
@@ -65,7 +65,8 @@ abstract class GuiMixin extends GuiComponent {
 
     @Inject(method = "renderPlayerHealth", at = @At("TAIL"))
     private void overflowingBars$renderPlayerHealth(PoseStack poseStack, CallbackInfo callback) {
-        if (!OverflowingBars.CONFIG.get(ClientConfig.class).toughness.armorToughnessBar) return;
+        ClientConfig.ToughnessRowConfig config = OverflowingBars.CONFIG.get(ClientConfig.class).toughness;
+        if (!config.armorToughnessBar) return;
         Player player = this.getCameraPlayer();
         if (player == null) return;
         LivingEntity livingEntity = this.getPlayerVehicleWithHealth();
@@ -77,8 +78,8 @@ abstract class GuiMixin extends GuiComponent {
         if (player.isEyeInFluid(FluidTags.WATER) || z < y) {
             rightHeight += 10;
         }
-        rightHeight += OverflowingBars.CONFIG.get(ClientConfig.class).toughness.toughnessBarRowShift * 10;
-        BarOverlayRenderer.renderToughnessLevelBar(poseStack, this.screenWidth, this.screenHeight, this.minecraft, rightHeight, OverflowingBars.CONFIG.get(ClientConfig.class).toughness.allowLayers);
+        rightHeight += config.toughnessBarRowShift * 10;
+        BarOverlayRenderer.renderToughnessLevelBar(poseStack, this.screenWidth, this.screenHeight, this.minecraft, rightHeight, config.allowCount, !config.allowLayers);
         BarOverlayRenderer.resetRenderState();
     }
 

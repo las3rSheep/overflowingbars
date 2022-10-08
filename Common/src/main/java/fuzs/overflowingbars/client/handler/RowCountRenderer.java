@@ -8,6 +8,7 @@ import fuzs.overflowingbars.config.ClientConfig;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.util.Mth;
 
 public class RowCountRenderer {
 
@@ -16,26 +17,31 @@ public class RowCountRenderer {
     }
 
     public static void drawBarRowCount(PoseStack poseStack, int posX, int posY, int barValue, boolean leftSide, int maxRowCount, Font font) {
+        if (barValue <= 0 || maxRowCount <= 0) return;
+        float rowCount = barValue / (float) maxRowCount;
         ClientConfig config = OverflowingBars.CONFIG.get(ClientConfig.class);
-        if (maxRowCount == 0 || !config.rowCount.allowRendering) return;
-        int rowCount = (barValue - 1) / maxRowCount;
-        if (!config.rowCount.alwaysRenderRowCount && rowCount < 1) return;
-        if (rowCount < 1 || !config.rowCount.countFullRowsOnly) rowCount++;
+        if (!config.rowCount.alwaysRenderRowCount && rowCount <= 1.0F) return;
+        int renderCount;
+        if (config.rowCount.countFullRowsOnly) {
+            renderCount = Mth.floor(rowCount);
+        } else {
+            renderCount = Mth.ceil(rowCount);
+        }
         int textColor = config.rowCount.rowCountColor.getColor();
         if (config.rowCount.forceFontRenderer) {
-            String text = String.valueOf(rowCount);
+            String text = String.valueOf(renderCount);
             if (config.rowCount.rowCountX) {
                 text += "x";
             }
             if (leftSide) posX -= font.width(text);
             drawBorderedText(poseStack, posX, posY + 1, text, textColor, 255, font);
         } else {
-            if (rowCount > 9) return;
+            if (renderCount > 9) return;
             float red = (textColor >> 16 & 255) / 255.0F;
             float green = (textColor >> 8 & 255) / 255.0F;
             float blue = (textColor >> 0 & 255) / 255.0F;
             if (leftSide) posX -= config.rowCount.rowCountX ? 7 : 3;
-            drawTinyRowCount(poseStack, posX, posY + 2, rowCount, 1.0F, red, green, blue);
+            drawTinyRowCount(poseStack, posX, posY + 2, renderCount, 1.0F, red, green, blue);
         }
     }
 

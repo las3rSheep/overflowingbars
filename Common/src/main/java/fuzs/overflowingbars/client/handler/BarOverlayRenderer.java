@@ -13,36 +13,38 @@ import org.jetbrains.annotations.Nullable;
 
 public class BarOverlayRenderer {
 
-    public static void renderHealthLevelBars(PoseStack poseStack, int screenWidth, int screenHeight, Minecraft minecraft, int leftHeight) {
+    public static void renderHealthLevelBars(PoseStack poseStack, int screenWidth, int screenHeight, Minecraft minecraft, int leftHeight, boolean rowCount) {
         Player player = getCameraPlayer(minecraft);
         if (player == null) return;
         int posX = screenWidth / 2 - 91;
         int posY = screenHeight - leftHeight;
         HealthBarRenderer.INSTANCE.renderPlayerHealth(poseStack, posX, posY, player, minecraft.getProfiler());
-        int allHearts = Mth.ceil(player.getHealth());
-        RowCountRenderer.drawBarRowCount(poseStack, posX - 2, posY, allHearts, true, minecraft.font);
-        int maxAbsorption = (20 - Mth.ceil(Math.min(20, allHearts) / 2.0F)) * 2;
-        RowCountRenderer.drawBarRowCount(poseStack, posX - 2, posY - 10, Mth.ceil(player.getAbsorptionAmount()), true, maxAbsorption, minecraft.font);
+        if (rowCount) {
+            int allHearts = Mth.ceil(player.getHealth());
+            RowCountRenderer.drawBarRowCount(poseStack, posX - 2, posY, allHearts, true, minecraft.font);
+            int maxAbsorption = (20 - Mth.ceil(Math.min(20, allHearts) / 2.0F)) * 2;
+            RowCountRenderer.drawBarRowCount(poseStack, posX - 2, posY - 10, Mth.ceil(player.getAbsorptionAmount()), true, maxAbsorption, minecraft.font);
+        }
     }
 
-    public static void renderArmorLevelBar(PoseStack poseStack, int screenWidth, int screenHeight, Minecraft minecraft, int leftHeight, boolean unmodified) {
+    public static void renderArmorLevelBar(PoseStack poseStack, int screenWidth, int screenHeight, Minecraft minecraft, int leftHeight, boolean rowCount, boolean unmodified) {
         Player player = getCameraPlayer(minecraft);
         if (player == null) return;
         int posX = screenWidth / 2 - 91;
         int posY = screenHeight - leftHeight;
         ArmorBarRenderer.onRenderArmorBar(poseStack, posX, posY, player, minecraft.getProfiler(), unmodified);
-        if (!unmodified) {
+        if (rowCount && !unmodified) {
             RowCountRenderer.drawBarRowCount(poseStack, posX - 2, posY, player.getArmorValue(), true, minecraft.font);
         }
     }
 
-    public static void renderToughnessLevelBar(PoseStack poseStack, int screenWidth, int screenHeight, Minecraft minecraft, int rightHeight, boolean unmodified) {
+    public static void renderToughnessLevelBar(PoseStack poseStack, int screenWidth, int screenHeight, Minecraft minecraft, int rightHeight, boolean rowCount, boolean unmodified) {
         Player player = getCameraPlayer(minecraft);
         if (player == null) return;
         int posX = screenWidth / 2 + 91;
         int posY = screenHeight - rightHeight;
         ArmorBarRenderer.onRenderToughnessBar(poseStack, posX, posY, player, minecraft.getProfiler(), unmodified);
-        if (!unmodified) {
+        if (rowCount && !unmodified) {
             int toughnessValue = Mth.floor(player.getAttributeValue(Attributes.ARMOR_TOUGHNESS));
             RowCountRenderer.drawBarRowCount(poseStack, posX + 2, posY, toughnessValue, false, minecraft.font);
         }

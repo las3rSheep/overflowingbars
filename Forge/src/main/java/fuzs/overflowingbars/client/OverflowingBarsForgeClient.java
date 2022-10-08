@@ -32,7 +32,7 @@ public class OverflowingBarsForgeClient {
             Minecraft minecraft = gui.getMinecraft();
             if (!minecraft.options.hideGui && gui.shouldDrawSurvivalElements()) {
                 RenderSystem.enableBlend();
-                BarOverlayRenderer.renderToughnessLevelBar(poseStack, screenWidth, screenHeight, minecraft, gui.rightHeight, OverflowingBars.CONFIG.get(ClientConfig.class).toughness.allowLayers);
+                BarOverlayRenderer.renderToughnessLevelBar(poseStack, screenWidth, screenHeight, minecraft, gui.rightHeight, OverflowingBars.CONFIG.get(ClientConfig.class).toughness.allowCount, OverflowingBars.CONFIG.get(ClientConfig.class).toughness.allowLayers);
                 RenderSystem.disableBlend();
                 gui.rightHeight += 10;
             }
@@ -52,7 +52,7 @@ public class OverflowingBarsForgeClient {
                 ForgeGui gui = ((ForgeGui) minecraft.gui);
                 if (!minecraft.options.hideGui && gui.shouldDrawSurvivalElements()) {
                     RenderSystem.enableBlend();
-                    BarOverlayRenderer.renderHealthLevelBars(evt.getPoseStack(), evt.getWindow().getGuiScaledWidth(), evt.getWindow().getGuiScaledHeight(), minecraft, gui.leftHeight);
+                    BarOverlayRenderer.renderHealthLevelBars(evt.getPoseStack(), evt.getWindow().getGuiScaledWidth(), evt.getWindow().getGuiScaledHeight(), minecraft, gui.leftHeight, OverflowingBars.CONFIG.get(ClientConfig.class).health.allowCount);
                     RenderSystem.disableBlend();
                     gui.leftHeight += ChatOffsetHelper.twoHealthRows(minecraft.player) ? 20 : 10;
                 }
@@ -63,7 +63,7 @@ public class OverflowingBarsForgeClient {
                 ForgeGui gui = ((ForgeGui) minecraft.gui);
                 if (!minecraft.options.hideGui && gui.shouldDrawSurvivalElements()) {
                     RenderSystem.enableBlend();
-                    BarOverlayRenderer.renderArmorLevelBar(evt.getPoseStack(), evt.getWindow().getGuiScaledWidth(), evt.getWindow().getGuiScaledHeight(), minecraft, gui.leftHeight, false);
+                    BarOverlayRenderer.renderArmorLevelBar(evt.getPoseStack(), evt.getWindow().getGuiScaledWidth(), evt.getWindow().getGuiScaledHeight(), minecraft, gui.leftHeight, OverflowingBars.CONFIG.get(ClientConfig.class).armor.allowCount, false);
                     RenderSystem.disableBlend();
                     gui.leftHeight += 10;
                 }
