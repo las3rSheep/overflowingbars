@@ -40,6 +40,8 @@ public class ClientConfig implements ConfigCore {
         @Config(description = "Shift toughness bar up or down by specified number of icon rows. Allows for better mod compat on Fabric, has no effect on Forge.")
         @Config.IntRange(min = -5, max = 5)
         public int toughnessBarRowShift = 0;
+        @Config(description = "Render the toughness bar on the left side above the hotbar (where health and armor is rendered).")
+        public boolean leftSide = false;
     }
 
     public static class RowCountConfig implements ConfigCore {

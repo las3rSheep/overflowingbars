@@ -27,13 +27,18 @@ public class OverflowingBarsForgeClient {
 
         @Override
         public void render(ForgeGui gui, PoseStack poseStack, float partialTick, int screenWidth, int screenHeight) {
-            if (!OverflowingBars.CONFIG.get(ClientConfig.class).toughness.armorToughnessBar) return;
+            ClientConfig.ToughnessRowConfig config = OverflowingBars.CONFIG.get(ClientConfig.class).toughness;
+            if (!config.armorToughnessBar) return;
             Minecraft minecraft = gui.getMinecraft();
             if (!minecraft.options.hideGui && gui.shouldDrawSurvivalElements()) {
                 RenderSystem.enableBlend();
-                BarOverlayRenderer.renderToughnessLevelBar(poseStack, screenWidth, screenHeight, minecraft, gui.rightHeight, OverflowingBars.CONFIG.get(ClientConfig.class).toughness.allowCount, !OverflowingBars.CONFIG.get(ClientConfig.class).toughness.allowLayers);
+                BarOverlayRenderer.renderToughnessLevelBar(poseStack, screenWidth, screenHeight, minecraft, config.leftSide ? gui.leftHeight : gui.rightHeight, config.allowCount, config.leftSide, !config.allowLayers);
                 RenderSystem.disableBlend();
-                gui.rightHeight += 10;
+                if (config.leftSide) {
+                    gui.leftHeight += 10;
+                } else {
+                    gui.rightHeight += 10;
+                }
             }
         }
     };

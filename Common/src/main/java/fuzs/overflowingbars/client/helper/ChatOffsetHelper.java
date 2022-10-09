@@ -12,14 +12,17 @@ public class ChatOffsetHelper {
     public static double getChatOffsetY() {
         Player player = Minecraft.getInstance().player;
         double offset = 0.0;
-        if (player.getArmorValue() > 0) {
-            offset += 10;
-        }
         if (twoHealthRows(player)) {
-            offset += 10;
+            offset += 10.0;
         }
-        if (offset == 0.0 && OverflowingBars.CONFIG.get(ClientConfig.class).toughness.armorToughnessBar && Mth.floor(player.getAttributeValue(Attributes.ARMOR_TOUGHNESS)) > 0) {
-            offset += 10;
+        if (player.getArmorValue() > 0) {
+            offset += 10.0;
+        }
+        ClientConfig.ToughnessRowConfig toughnessConfig = OverflowingBars.CONFIG.get(ClientConfig.class).toughness;
+        if (toughnessConfig.armorToughnessBar && Mth.floor(player.getAttributeValue(Attributes.ARMOR_TOUGHNESS)) > 0) {
+            if (toughnessConfig.leftSide || offset == 0.0) {
+                offset += 10.0;
+            }
         }
         return offset;
     }

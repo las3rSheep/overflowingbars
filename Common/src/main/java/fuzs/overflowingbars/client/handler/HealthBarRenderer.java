@@ -127,7 +127,7 @@ public class HealthBarRenderer {
         WITHERED(6, true),
         ABSORBING(8, false),
         FROZEN(9, false),
-        ORANGE(0, 2, 3, BarOverlayRenderer.OVERFLOWING_ICONS_LOCATION, true);
+        ORANGE(0, 3, 4, BarOverlayRenderer.OVERFLOWING_ICONS_LOCATION, true);
 
         private static ResourceLocation lastIconsSheet;
 

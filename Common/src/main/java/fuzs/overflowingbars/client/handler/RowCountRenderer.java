@@ -13,11 +13,11 @@ import net.minecraft.util.Mth;
 public class RowCountRenderer {
     private static final ResourceLocation TINY_NUMBERS_LOCATION = new ResourceLocation(OverflowingBars.MOD_ID, "textures/font/tiny_numbers.png");
 
-    public static void drawBarRowCount(PoseStack poseStack, int posX, int posY, int barValue, boolean leftSide, Font font) {
-        drawBarRowCount(poseStack, posX, posY, barValue, leftSide, 20, font);
+    public static void drawBarRowCount(PoseStack poseStack, int posX, int posY, int barValue, boolean left, Font font) {
+        drawBarRowCount(poseStack, posX, posY, barValue, left, 20, font);
     }
 
-    public static void drawBarRowCount(PoseStack poseStack, int posX, int posY, int barValue, boolean leftSide, int maxRowCount, Font font) {
+    public static void drawBarRowCount(PoseStack poseStack, int posX, int posY, int barValue, boolean left, int maxRowCount, Font font) {
         if (barValue <= 0 || maxRowCount <= 0) return;
         float rowCount = barValue / (float) maxRowCount;
         ClientConfig config = OverflowingBars.CONFIG.get(ClientConfig.class);
@@ -34,14 +34,14 @@ public class RowCountRenderer {
             if (config.rowCount.rowCountX) {
                 text += "x";
             }
-            if (leftSide) posX -= font.width(text);
+            if (left) posX -= font.width(text);
             drawBorderedText(poseStack, posX, posY + 1, text, textColor, 255, font);
         } else {
             if (renderCount > 9) return;
             float red = (textColor >> 16 & 255) / 255.0F;
             float green = (textColor >> 8 & 255) / 255.0F;
             float blue = (textColor >> 0 & 255) / 255.0F;
-            if (leftSide) posX -= config.rowCount.rowCountX ? 7 : 3;
+            if (left) posX -= config.rowCount.rowCountX ? 7 : 3;
             drawTinyRowCount(poseStack, posX, posY + 2, renderCount, 1.0F, red, green, blue);
         }
     }

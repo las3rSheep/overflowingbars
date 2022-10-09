@@ -2,6 +2,7 @@ package fuzs.overflowingbars.mixin.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import fuzs.overflowingbars.OverflowingBars;
+import fuzs.overflowingbars.api.client.SharedGuiHeights;
 import fuzs.overflowingbars.api.client.event.CustomizeChatPanelCallback;
 import fuzs.overflowingbars.client.handler.BarOverlayRenderer;
 import fuzs.overflowingbars.client.helper.ChatOffsetHelper;
@@ -15,6 +16,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -24,6 +26,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.Optional;
 
 @Mixin(Gui.class)
 abstract class GuiMixin extends GuiComponent {
@@ -48,60 +52,81 @@ abstract class GuiMixin extends GuiComponent {
     private void overflowingBars$renderHearts(PoseStack poseStack, Player player, int x, int y, int height, int i, float f, int j, int k, int l, boolean bl, CallbackInfo callback) {
         if (OverflowingBars.CONFIG.get(ClientConfig.class).health.allowLayers) {
             int leftHeight = 39;
-            leftHeight += FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance ? distance : 0;
-            BarOverlayRenderer.renderHealthLevelBars(poseStack, this.screenWidth, this.screenHeight, this.minecraft, leftHeight, OverflowingBars.CONFIG.get(ClientConfig.class).health.allowCount);
+            final int raisedHeight = FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance ? distance : 0;
+            BarOverlayRenderer.renderHealthLevelBars(poseStack, this.screenWidth, this.screenHeight, this.minecraft, leftHeight + raisedHeight, OverflowingBars.CONFIG.get(ClientConfig.class).health.allowCount);
             BarOverlayRenderer.resetRenderState();
             callback.cancel();
         }
     }
 
     @ModifyVariable(method = "renderPlayerHealth", at = @At("STORE"), ordinal = 11, slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;getArmorValue()I"), to = @At(value = "FIELD", target = "Lnet/minecraft/world/effect/MobEffects;REGENERATION:Lnet/minecraft/world/effect/MobEffect;")))
-    private int overflowingBars$renderPlayerHealth(int armorValue, PoseStack poseStack) {
-        ClientConfig.ArmorRowConfig config = OverflowingBars.CONFIG.get(ClientConfig.class).armor;
-        if (config.allowLayers || OverflowingBars.CONFIG.get(ClientConfig.class).health.allowLayers) {
-            int leftHeight = 39 + this.overflowingBars$getArmorBarLeftHeight(this.getCameraPlayer());
-            leftHeight += FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance ? distance : 0;
-            BarOverlayRenderer.renderArmorLevelBar(poseStack, this.screenWidth, this.screenHeight, this.minecraft, leftHeight, config.allowCount, !config.allowLayers);
+    private int overflowingBars$renderPlayerHealth$1(int armorValue, PoseStack poseStack) {
+        Player player = this.getCameraPlayer();
+        int leftHeight = 39 + this.overflowingBars$getAdditionalLeftHeight(player);
+        final int raisedHeight = FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance ? distance : 0;
+        ClientConfig.ArmorRowConfig armorConfig = OverflowingBars.CONFIG.get(ClientConfig.class).armor;
+        if (armorConfig.allowLayers || OverflowingBars.CONFIG.get(ClientConfig.class).health.allowLayers) {
+            armorValue = 0;
+            BarOverlayRenderer.renderArmorLevelBar(poseStack, this.screenWidth, this.screenHeight, this.minecraft, leftHeight + raisedHeight, armorConfig.allowCount, !armorConfig.allowLayers);
             BarOverlayRenderer.resetRenderState();
-            return 0;
         }
+        if (player.getArmorValue() > 0) leftHeight += 10;
+        ClientConfig.ToughnessRowConfig toughnessConfig = OverflowingBars.CONFIG.get(ClientConfig.class).toughness;
+        if (!toughnessConfig.armorToughnessBar || !toughnessConfig.leftSide) return armorValue;
+        BarOverlayRenderer.renderToughnessLevelBar(poseStack, this.screenWidth, this.screenHeight, this.minecraft, leftHeight + raisedHeight, toughnessConfig.allowCount, true, !toughnessConfig.allowLayers);
+        BarOverlayRenderer.resetRenderState();
+        if (Mth.floor(player.getAttributeValue(Attributes.ARMOR_TOUGHNESS)) > 0) leftHeight += 10;
+        FabricLoader.getInstance().getObjectShare().put(SharedGuiHeights.OBJECT_SHARE_LEFT_HEIGHT_KEY, new MutableInt(leftHeight));
         return armorValue;
     }
 
     @Inject(method = "renderPlayerHealth", at = @At("TAIL"))
     private void overflowingBars$renderPlayerHealth(PoseStack poseStack, CallbackInfo callback) {
         ClientConfig.ToughnessRowConfig config = OverflowingBars.CONFIG.get(ClientConfig.class).toughness;
-        if (!config.armorToughnessBar) return;
         Player player = this.getCameraPlayer();
         if (player == null) return;
-        LivingEntity livingEntity = this.getPlayerVehicleWithHealth();
-        int x = this.getVehicleMaxHearts(livingEntity);
-        int aa = this.getVisibleVehicleHeartRows(x) - 1;
-        int rightHeight = 39 + Math.max(1, aa) * 10;
-        int y = player.getMaxAirSupply();
-        int z = Math.min(player.getAirSupply(), y);
-        if (player.isEyeInFluid(FluidTags.WATER) || z < y) {
-            rightHeight += 10;
+        Optional<MutableInt> leaveMyBarsAloneHeight = FabricLoader.getInstance().getObjectShare().get("leavemybarsalone:rightHeight") instanceof MutableInt height ? Optional.of(height) : Optional.empty();
+        int rightHeight = leaveMyBarsAloneHeight.map(MutableInt::intValue).orElseGet(() -> 39 + this.overflowingBars$getAdditionalRightHeight(player));
+        if (config.armorToughnessBar && !config.leftSide) {
+            final int raisedHeight = FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance ? distance : 0;
+            BarOverlayRenderer.renderToughnessLevelBar(poseStack, this.screenWidth, this.screenHeight, this.minecraft, rightHeight + config.toughnessBarRowShift * 10 + raisedHeight, config.allowCount, false, !config.allowLayers);
+            BarOverlayRenderer.resetRenderState();
+            if (Mth.floor(player.getAttributeValue(Attributes.ARMOR_TOUGHNESS)) > 0) {
+                int toughnessHeight = 10 + config.toughnessBarRowShift * 10;
+                rightHeight += toughnessHeight;
+                leaveMyBarsAloneHeight.ifPresent(mutableInt -> mutableInt.add(toughnessHeight));
+            }
         }
-        rightHeight += config.toughnessBarRowShift * 10;
-        rightHeight += FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance ? distance : 0;
-        BarOverlayRenderer.renderToughnessLevelBar(poseStack, this.screenWidth, this.screenHeight, this.minecraft, rightHeight, config.allowCount, !config.allowLayers);
-        BarOverlayRenderer.resetRenderState();
+        FabricLoader.getInstance().getObjectShare().put(SharedGuiHeights.OBJECT_SHARE_RIGHT_HEIGHT_KEY, new MutableInt(rightHeight));
     }
 
     @Unique
-    private int overflowingBars$getArmorBarLeftHeight(Player player) {
+    private int overflowingBars$getAdditionalLeftHeight(Player player) {
         if (OverflowingBars.CONFIG.get(ClientConfig.class).health.allowLayers) {
             return ChatOffsetHelper.twoHealthRows(player) ? 20 : 10;
         } else {
             int i = Mth.ceil(player.getHealth());
             int k = this.displayHealth;
-            float f = Math.max((float)player.getAttributeValue(Attributes.MAX_HEALTH), (float) Math.max(k, i));
+            float f = Math.max((float) player.getAttributeValue(Attributes.MAX_HEALTH), (float) Math.max(k, i));
             int l1 = Mth.ceil(player.getAbsorptionAmount());
-            int i2 = Mth.ceil((f + (float)l1) / 2.0F / 10.0F);
+            int i2 = Mth.ceil((f + (float) l1) / 2.0F / 10.0F);
             int j2 = Math.max(10 - (i2 - 2), 3);
             return (i2 - 1) * j2 + 10;
         }
+    }
+
+    @Unique
+    private int overflowingBars$getAdditionalRightHeight(Player player) {
+        LivingEntity livingEntity = this.getPlayerVehicleWithHealth();
+        int x = this.getVehicleMaxHearts(livingEntity);
+        int aa = this.getVisibleVehicleHeartRows(x) - 1;
+        int rightHeight = Math.max(1, aa) * 10;
+        int y = player.getMaxAirSupply();
+        int z = Math.min(player.getAirSupply(), y);
+        if (player.isEyeInFluid(FluidTags.WATER) || z < y) {
+            rightHeight += 10;
+        }
+        return rightHeight;
     }
 
     @Shadow
