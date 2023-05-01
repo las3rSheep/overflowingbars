@@ -15,12 +15,11 @@ public class ChatOffsetHelper {
         if (twoHealthRows(player)) {
             offset += 10.0;
         }
-        if (player.getArmorValue() > 0) {
+        if (armorRow(player)) {
             offset += 10.0;
         }
-        ClientConfig.ToughnessRowConfig toughnessConfig = OverflowingBars.CONFIG.get(ClientConfig.class).toughness;
-        if (toughnessConfig.armorToughnessBar && Mth.floor(player.getAttributeValue(Attributes.ARMOR_TOUGHNESS)) > 0) {
-            if (toughnessConfig.leftSide || offset == 0.0) {
+        if (toughnessRow(player)) {
+            if (OverflowingBars.CONFIG.get(ClientConfig.class).toughness.leftSide || offset == 0.0) {
                 offset += 10.0;
             }
         }
@@ -29,5 +28,13 @@ public class ChatOffsetHelper {
 
     public static boolean twoHealthRows(Player player) {
         return player.getAbsorptionAmount() > 0.0F && player.getMaxHealth() + player.getAbsorptionAmount() > 20.0F;
+    }
+
+    public static boolean armorRow(Player player) {
+        return player.getArmorValue() > 0;
+    }
+
+    public static boolean toughnessRow(Player player) {
+        return OverflowingBars.CONFIG.get(ClientConfig.class).toughness.armorToughnessBar && Mth.floor(player.getAttributeValue(Attributes.ARMOR_TOUGHNESS)) > 0;
     }
 }

@@ -34,10 +34,12 @@ public class OverflowingBarsForgeClient {
                 RenderSystem.enableBlend();
                 BarOverlayRenderer.renderToughnessLevelBar(poseStack, screenWidth, screenHeight, minecraft, config.leftSide ? gui.leftHeight : gui.rightHeight, config.allowCount, config.leftSide, !config.allowLayers);
                 RenderSystem.disableBlend();
-                if (config.leftSide) {
-                    gui.leftHeight += 10;
-                } else {
-                    gui.rightHeight += 10;
+                if (ChatOffsetHelper.toughnessRow(minecraft.player)) {
+                    if (config.leftSide) {
+                        gui.leftHeight += 10;
+                    } else {
+                        gui.rightHeight += 10;
+                    }
                 }
             }
         }
@@ -68,7 +70,9 @@ public class OverflowingBarsForgeClient {
                     RenderSystem.enableBlend();
                     BarOverlayRenderer.renderArmorLevelBar(evt.getPoseStack(), evt.getWindow().getGuiScaledWidth(), evt.getWindow().getGuiScaledHeight(), minecraft, gui.leftHeight, OverflowingBars.CONFIG.get(ClientConfig.class).armor.allowCount, false);
                     RenderSystem.disableBlend();
-                    gui.leftHeight += 10;
+                    if (ChatOffsetHelper.armorRow(minecraft.player)) {
+                        gui.leftHeight += 10;
+                    }
                 }
                 evt.setCanceled(true);
             }
