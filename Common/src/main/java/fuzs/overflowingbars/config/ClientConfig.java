@@ -15,6 +15,8 @@ public class ClientConfig implements ConfigCore {
     public RowCountConfig rowCount = new RowCountConfig();
     @Config(category = "general", description = "Move chat messages above armor/absorption bar.")
     public boolean moveChatAboveArmor = true;
+    @Config(category = "general", description = "Move the experience level display above the experience bar.")
+    public boolean moveExperienceAboveBar = true;
     @Config(category = "integration", description = "Disables restored health preview in Apple Skin mod as it conflicts with stacked heart rendering. Only disable when integration breaks.")
     public boolean appleSkinIntegration = true;
 

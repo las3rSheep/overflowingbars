@@ -30,7 +30,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Optional;
 
 @Mixin(Gui.class)
-abstract class GuiMixin extends GuiComponent {
+abstract class GuiFabricMixin extends GuiComponent {
     @Shadow
     @Final
     private Minecraft minecraft;
