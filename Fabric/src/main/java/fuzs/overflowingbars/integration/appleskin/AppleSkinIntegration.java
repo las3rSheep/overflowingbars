@@ -1,5 +1,6 @@
 package fuzs.overflowingbars.integration.appleskin;
 
+import fuzs.overflowingbars.OverflowingBars;
 import squeek.appleskin.api.event.HUDOverlayEvent;
 
 /**
@@ -8,7 +9,11 @@ import squeek.appleskin.api.event.HUDOverlayEvent;
 public class AppleSkinIntegration {
 
     public static void init() {
-        // just disable this, it's not too useful anyway and would be annoying to get to work properly with the stacked rendering
-        HUDOverlayEvent.HealthRestored.EVENT.register(healthRestored -> healthRestored.isCanceled = true);
+        try {
+            // just disable this, it's not too useful anyway and would be annoying to get to work properly with the stacked rendering
+            HUDOverlayEvent.HealthRestored.EVENT.register(healthRestored -> healthRestored.isCanceled = true);
+        } catch (Throwable throwable) {
+            OverflowingBars.LOGGER.warn("Failed to initialize Apple Skin integration", throwable);
+        }
     }
 }

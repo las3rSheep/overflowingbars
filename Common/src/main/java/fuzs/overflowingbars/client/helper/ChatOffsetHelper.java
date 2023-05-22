@@ -9,21 +9,17 @@ import net.minecraft.world.entity.player.Player;
 
 public class ChatOffsetHelper {
 
-    public static double getChatOffsetY() {
-        Player player = Minecraft.getInstance().player;
-        double offset = 0.0;
-        if (twoHealthRows(player)) {
-            offset += 10.0;
-        }
-        if (armorRow(player)) {
-            offset += 10.0;
-        }
-        if (toughnessRow(player)) {
-            if (OverflowingBars.CONFIG.get(ClientConfig.class).toughness.leftSide || offset == 0.0) {
-                offset += 10.0;
+    public static int getChatOffsetY() {
+        int offset = 0;
+        Minecraft minecraft = Minecraft.getInstance();
+        if (twoHealthRows(minecraft.player)) offset++;
+        if (armorRow(minecraft.player)) offset++;
+        if (toughnessRow(minecraft.player)) {
+            if (OverflowingBars.CONFIG.get(ClientConfig.class).toughness.leftSide || offset == 0) {
+                offset++;
             }
         }
-        return offset;
+        return offset * 10;
     }
 
     public static boolean twoHealthRows(Player player) {

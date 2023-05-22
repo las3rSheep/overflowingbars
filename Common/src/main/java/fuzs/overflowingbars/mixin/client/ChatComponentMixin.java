@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 abstract class ChatComponentMixin extends GuiComponent {
 
     @ModifyVariable(method = "screenToChatY", at = @At("LOAD"), ordinal = 0)
-    private double overflowingbars$screenToChatY(double mouseY) {
+    private double screenToChatY(double mouseY) {
         if (!OverflowingBars.CONFIG.get(ClientConfig.class).moveChatAboveArmor) return mouseY;
         return mouseY + ChatOffsetHelper.getChatOffsetY();
     }

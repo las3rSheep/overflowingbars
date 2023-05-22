@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.event.EventFactory;
 
 import java.util.OptionalInt;
 
+@Deprecated(forRemoval = true)
 public interface CustomizeChatPanelCallback {
     Event<CustomizeChatPanelCallback> EVENT = EventFactory.createArrayBacked(CustomizeChatPanelCallback.class, listeners -> (int posY) -> {
         for (CustomizeChatPanelCallback event : listeners) {

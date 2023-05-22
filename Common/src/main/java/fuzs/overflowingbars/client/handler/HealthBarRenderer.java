@@ -25,7 +25,7 @@ public class HealthBarRenderer {
     private long lastHealthTime;
     private long healthBlinkTime;
 
-    public void onClientTick$Start(Minecraft minecraft) {
+    public void onStartTick(Minecraft minecraft) {
         this.tickCount++;
     }
 

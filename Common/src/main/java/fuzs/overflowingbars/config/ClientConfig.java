@@ -1,7 +1,7 @@
 package fuzs.overflowingbars.config;
 
-import fuzs.puzzleslib.config.ConfigCore;
-import fuzs.puzzleslib.config.annotation.Config;
+import fuzs.puzzleslib.api.config.v3.Config;
+import fuzs.puzzleslib.api.config.v3.ConfigCore;
 import net.minecraft.ChatFormatting;
 
 public class ClientConfig implements ConfigCore {
@@ -17,8 +17,6 @@ public class ClientConfig implements ConfigCore {
     public boolean moveChatAboveArmor = true;
     @Config(category = "general", description = "Move the experience level display above the experience bar.")
     public boolean moveExperienceAboveBar = true;
-    @Config(category = "integration", description = "Disables restored health preview in Apple Skin mod as it conflicts with stacked heart rendering. Only disable when integration breaks.")
-    public boolean appleSkinIntegration = true;
 
     public static class IconRowConfig implements ConfigCore {
         @Config(description = "Add layers to this bar. When disabled any modifications to the bar from this mod will be turned off.")

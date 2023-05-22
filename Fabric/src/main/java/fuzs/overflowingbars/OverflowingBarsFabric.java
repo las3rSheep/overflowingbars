@@ -1,12 +1,12 @@
 package fuzs.overflowingbars;
 
-import fuzs.puzzleslib.core.CoreServices;
+import fuzs.puzzleslib.api.core.v1.ModConstructor;
 import net.fabricmc.api.ModInitializer;
 
 public class OverflowingBarsFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        CoreServices.FACTORIES.modConstructor(OverflowingBars.MOD_ID).accept(new OverflowingBars());
+        ModConstructor.construct(OverflowingBars.MOD_ID, OverflowingBars::new);
     }
 }

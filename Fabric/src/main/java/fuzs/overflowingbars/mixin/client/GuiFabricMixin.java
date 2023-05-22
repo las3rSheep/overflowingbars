@@ -41,15 +41,21 @@ abstract class GuiFabricMixin extends GuiComponent {
     @Shadow
     protected int displayHealth;
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lcom/mojang/blaze3d/vertex/PoseStack;I)V"))
-    public void overflowingBars$render(PoseStack poseStack, float partialTick, CallbackInfo callback) {
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lcom/mojang/blaze3d/vertex/PoseStack;III)V", shift = At.Shift.BEFORE))
+    public void render$0(PoseStack poseStack, float partialTick, CallbackInfo callback) {
+        poseStack.pushPose();
         CustomizeChatPanelCallback.EVENT.invoker().onRenderChatPanel(this.screenHeight - 48).ifPresent(posY -> {
             poseStack.translate(0.0, posY - (this.screenHeight - 48), 0.0);
         });
     }
 
+    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lcom/mojang/blaze3d/vertex/PoseStack;III)V", shift = At.Shift.AFTER))
+    public void render$1(PoseStack poseStack, float partialTick, CallbackInfo callback) {
+        poseStack.popPose();
+    }
+
     @Inject(method = "renderHearts", at = @At("HEAD"), cancellable = true)
-    private void overflowingBars$renderHearts(PoseStack poseStack, Player player, int x, int y, int height, int i, float f, int j, int k, int l, boolean bl, CallbackInfo callback) {
+    private void renderHearts(PoseStack poseStack, Player player, int x, int y, int height, int i, float f, int j, int k, int l, boolean bl, CallbackInfo callback) {
         if (OverflowingBars.CONFIG.get(ClientConfig.class).health.allowLayers) {
             int leftHeight = 39;
             final int raisedHeight = FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance ? distance : 0;
@@ -60,7 +66,7 @@ abstract class GuiFabricMixin extends GuiComponent {
     }
 
     @ModifyVariable(method = "renderPlayerHealth", at = @At("STORE"), ordinal = 11, slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;getArmorValue()I"), to = @At(value = "FIELD", target = "Lnet/minecraft/world/effect/MobEffects;REGENERATION:Lnet/minecraft/world/effect/MobEffect;")))
-    private int overflowingBars$renderPlayerHealth$1(int armorValue, PoseStack poseStack) {
+    private int renderPlayerHealth$1(int armorValue, PoseStack poseStack) {
         Player player = this.getCameraPlayer();
         int leftHeight = 39 + this.overflowingBars$getAdditionalLeftHeight(player);
         final int raisedHeight = FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance ? distance : 0;
@@ -81,7 +87,7 @@ abstract class GuiFabricMixin extends GuiComponent {
     }
 
     @Inject(method = "renderPlayerHealth", at = @At("TAIL"))
-    private void overflowingBars$renderPlayerHealth(PoseStack poseStack, CallbackInfo callback) {
+    private void renderPlayerHealth(PoseStack poseStack, CallbackInfo callback) {
         ClientConfig.ToughnessRowConfig config = OverflowingBars.CONFIG.get(ClientConfig.class).toughness;
         Player player = this.getCameraPlayer();
         if (player == null) return;
