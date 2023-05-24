@@ -41,7 +41,7 @@ dependencies {
     minecraft "com.mojang:minecraft:${minecraftVersion}"
     mappings loom.layered() {
         officialMojangMappings()
-        parchment("org.parchmentmc.data:parchment-${minecraftVersion}:${parchmentMappingsVersion}@zip")
+//        parchment("org.parchmentmc.data:parchment-${minecraftVersion}:${parchmentMappingsVersion}@zip")
     }
 
     // Fabric
@@ -49,12 +49,12 @@ dependencies {
     modApi "net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}"
 
     // Apple Skin
-    modApi "me.shedaniel.cloth:cloth-config-fabric:9.0.94"
-    modApi "curse.maven:appleskin-248787:4171199"
+    modApi "me.shedaniel.cloth:cloth-config-fabric:10.0.96"
+    modApi "curse.maven:appleskin-248787:4440101"
 
     // Quality of Life Mods
-    modLocalRuntime "com.terraformersmc:modmenu:5.0.2"
-    modLocalRuntime "curse.maven:configured-fabric-667378:4441611"
+    modLocalRuntime "com.terraformersmc:modmenu:6.2.2"
+//    modLocalRuntime "curse.maven:configured-fabric-667378:4441611"
 
     // Puzzles Lib
     modApi "fuzs.puzzleslib:puzzleslib-fabric:${puzzlesVersion}"
