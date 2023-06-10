@@ -1,16 +1,14 @@
 package fuzs.overflowingbars.mixin.client;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import fuzs.overflowingbars.OverflowingBars;
 import fuzs.overflowingbars.api.client.SharedGuiHeights;
-import fuzs.overflowingbars.api.client.event.CustomizeChatPanelCallback;
 import fuzs.overflowingbars.client.handler.BarOverlayRenderer;
 import fuzs.overflowingbars.client.helper.ChatOffsetHelper;
 import fuzs.overflowingbars.config.ClientConfig;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -30,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Optional;
 
 @Mixin(Gui.class)
-abstract class GuiFabricMixin extends GuiComponent {
+abstract class GuiFabricMixin {
     @Shadow
     @Final
     private Minecraft minecraft;
@@ -41,45 +39,32 @@ abstract class GuiFabricMixin extends GuiComponent {
     @Shadow
     protected int displayHealth;
 
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lcom/mojang/blaze3d/vertex/PoseStack;III)V", shift = At.Shift.BEFORE))
-    public void render$0(PoseStack poseStack, float partialTick, CallbackInfo callback) {
-        poseStack.pushPose();
-        CustomizeChatPanelCallback.EVENT.invoker().onRenderChatPanel(this.screenHeight - 48).ifPresent(posY -> {
-            poseStack.translate(0.0, posY - (this.screenHeight - 48), 0.0);
-        });
-    }
-
-    @Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lcom/mojang/blaze3d/vertex/PoseStack;III)V", shift = At.Shift.AFTER))
-    public void render$1(PoseStack poseStack, float partialTick, CallbackInfo callback) {
-        poseStack.popPose();
-    }
-
     @Inject(method = "renderHearts", at = @At("HEAD"), cancellable = true)
-    private void renderHearts(PoseStack poseStack, Player player, int x, int y, int height, int i, float f, int j, int k, int l, boolean bl, CallbackInfo callback) {
+    private void renderHearts(GuiGraphics guiGraphics, Player player, int x, int y, int height, int i, float f, int j, int k, int l, boolean bl, CallbackInfo callback) {
         if (OverflowingBars.CONFIG.get(ClientConfig.class).health.allowLayers) {
             int leftHeight = 39;
             final int raisedHeight = FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance ? distance : 0;
-            BarOverlayRenderer.renderHealthLevelBars(poseStack, this.screenWidth, this.screenHeight, this.minecraft, leftHeight + raisedHeight, OverflowingBars.CONFIG.get(ClientConfig.class).health.allowCount);
+            BarOverlayRenderer.renderHealthLevelBars(guiGraphics, this.screenWidth, this.screenHeight, this.minecraft, leftHeight + raisedHeight, OverflowingBars.CONFIG.get(ClientConfig.class).health.allowCount);
             BarOverlayRenderer.resetRenderState();
             callback.cancel();
         }
     }
 
     @ModifyVariable(method = "renderPlayerHealth", at = @At("STORE"), ordinal = 11, slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;getArmorValue()I"), to = @At(value = "FIELD", target = "Lnet/minecraft/world/effect/MobEffects;REGENERATION:Lnet/minecraft/world/effect/MobEffect;")))
-    private int renderPlayerHealth$1(int armorValue, PoseStack poseStack) {
+    private int renderPlayerHealth$1(int armorValue, GuiGraphics guiGraphics) {
         Player player = this.getCameraPlayer();
         int leftHeight = 39 + this.overflowingBars$getAdditionalLeftHeight(player);
         final int raisedHeight = FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance ? distance : 0;
         ClientConfig.ArmorRowConfig armorConfig = OverflowingBars.CONFIG.get(ClientConfig.class).armor;
         if (armorConfig.allowLayers || OverflowingBars.CONFIG.get(ClientConfig.class).health.allowLayers) {
             armorValue = 0;
-            BarOverlayRenderer.renderArmorLevelBar(poseStack, this.screenWidth, this.screenHeight, this.minecraft, leftHeight + raisedHeight, armorConfig.allowCount, !armorConfig.allowLayers);
+            BarOverlayRenderer.renderArmorLevelBar(guiGraphics, this.screenWidth, this.screenHeight, this.minecraft, leftHeight + raisedHeight, armorConfig.allowCount, !armorConfig.allowLayers);
             BarOverlayRenderer.resetRenderState();
         }
         if (player.getArmorValue() > 0) leftHeight += 10;
         ClientConfig.ToughnessRowConfig toughnessConfig = OverflowingBars.CONFIG.get(ClientConfig.class).toughness;
         if (!toughnessConfig.armorToughnessBar || !toughnessConfig.leftSide) return armorValue;
-        BarOverlayRenderer.renderToughnessLevelBar(poseStack, this.screenWidth, this.screenHeight, this.minecraft, leftHeight + raisedHeight, toughnessConfig.allowCount, true, !toughnessConfig.allowLayers);
+        BarOverlayRenderer.renderToughnessLevelBar(guiGraphics, this.screenWidth, this.screenHeight, this.minecraft, leftHeight + raisedHeight, toughnessConfig.allowCount, true, !toughnessConfig.allowLayers);
         BarOverlayRenderer.resetRenderState();
         if (Mth.floor(player.getAttributeValue(Attributes.ARMOR_TOUGHNESS)) > 0) leftHeight += 10;
         FabricLoader.getInstance().getObjectShare().put(SharedGuiHeights.OBJECT_SHARE_LEFT_HEIGHT_KEY, new MutableInt(leftHeight));
@@ -87,7 +72,7 @@ abstract class GuiFabricMixin extends GuiComponent {
     }
 
     @Inject(method = "renderPlayerHealth", at = @At("TAIL"))
-    private void renderPlayerHealth(PoseStack poseStack, CallbackInfo callback) {
+    private void renderPlayerHealth(GuiGraphics guiGraphics, CallbackInfo callback) {
         ClientConfig.ToughnessRowConfig config = OverflowingBars.CONFIG.get(ClientConfig.class).toughness;
         Player player = this.getCameraPlayer();
         if (player == null) return;
@@ -95,7 +80,7 @@ abstract class GuiFabricMixin extends GuiComponent {
         int rightHeight = leaveMyBarsAloneHeight.map(MutableInt::intValue).orElseGet(() -> 39 + this.overflowingBars$getAdditionalRightHeight(player));
         if (config.armorToughnessBar && !config.leftSide) {
             final int raisedHeight = FabricLoader.getInstance().getObjectShare().get("raised:distance") instanceof Integer distance ? distance : 0;
-            BarOverlayRenderer.renderToughnessLevelBar(poseStack, this.screenWidth, this.screenHeight, this.minecraft, rightHeight + config.toughnessBarRowShift * 10 + raisedHeight, config.allowCount, false, !config.allowLayers);
+            BarOverlayRenderer.renderToughnessLevelBar(guiGraphics, this.screenWidth, this.screenHeight, this.minecraft, rightHeight + config.toughnessBarRowShift * 10 + raisedHeight, config.allowCount, false, !config.allowLayers);
             BarOverlayRenderer.resetRenderState();
             if (Mth.floor(player.getAttributeValue(Attributes.ARMOR_TOUGHNESS)) > 0) {
                 int toughnessHeight = 10 + config.toughnessBarRowShift * 10;

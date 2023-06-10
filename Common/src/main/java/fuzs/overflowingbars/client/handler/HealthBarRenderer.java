@@ -1,12 +1,11 @@
 package fuzs.overflowingbars.client.handler;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import fuzs.overflowingbars.OverflowingBars;
 import fuzs.overflowingbars.config.ClientConfig;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiComponent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -29,7 +28,7 @@ public class HealthBarRenderer {
         this.tickCount++;
     }
 
-    public void renderPlayerHealth(PoseStack poseStack, int posX, int posY, Player player, ProfilerFiller profiler) {
+    public void renderPlayerHealth(GuiGraphics guiGraphics, int posX, int posY, Player player, ProfilerFiller profiler) {
         profiler.push("health");
         BarOverlayRenderer.resetRenderState();
         RenderSystem.enableBlend();
@@ -58,13 +57,13 @@ public class HealthBarRenderer {
         if (player.hasEffect(MobEffects.REGENERATION)) {
             heartOffsetByRegen = this.tickCount % Mth.ceil(Math.min(20.0F, maxHealth) + 5.0F);
         }
-        this.renderHearts(poseStack, player, posX, posY, heartOffsetByRegen, maxHealth, currentHealth, displayHealth, currentAbsorption, blink);
+        this.renderHearts(guiGraphics, player, posX, posY, heartOffsetByRegen, maxHealth, currentHealth, displayHealth, currentAbsorption, blink);
         RenderSystem.disableBlend();
         profiler.pop();
     }
 
-    private void renderHearts(PoseStack poseStack, Player player, int posX, int posY, int heartOffsetByRegen, float maxHealth, int currentHealth, int displayHealth, int currentAbsorptionHealth, boolean blink) {
-        boolean hardcore = player.level.getLevelData().isHardcore();
+    private void renderHearts(GuiGraphics guiGraphics, Player player, int posX, int posY, int heartOffsetByRegen, float maxHealth, int currentHealth, int displayHealth, int currentAbsorptionHealth, boolean blink) {
+        boolean hardcore = player.level().getLevelData().isHardcore();
         int normalHearts = Math.min(10, Mth.ceil((double) maxHealth / 2.0));
         int maxAbsorptionHearts = 20 - normalHearts;
         int absorptionHearts = Math.min(20 - normalHearts, Mth.ceil((double) currentAbsorptionHealth / 2.0));
@@ -81,7 +80,7 @@ public class HealthBarRenderer {
                 currentPosY -= 2;
             }
 
-            this.renderHeart(poseStack, HeartType.CONTAINER, currentPosX, currentPosY, blink, false, hardcore);
+            this.renderHeart(guiGraphics, HeartType.CONTAINER, currentPosX, currentPosY, blink, false, hardcore);
             if (currentHeart >= normalHearts) {
                 int currentAbsorption = currentHeart * 2 - normalHearts * 2;
                 if (currentAbsorption < currentAbsorptionHealth) {
@@ -89,9 +88,9 @@ public class HealthBarRenderer {
                     boolean halfHeart = currentAbsorption + 1 == currentAbsorptionHealth % maxAbsorptionHealth;
                     boolean orange = currentAbsorptionHealth > maxAbsorptionHealth && currentAbsorption + 1 <= (currentAbsorptionHealth - 1) % maxAbsorptionHealth + 1;
                     if (halfHeart && orange) {
-                        this.renderHeart(poseStack, HeartType.forPlayer(player, true, false), currentPosX, currentPosY, false, false, hardcore);
+                        this.renderHeart(guiGraphics, HeartType.forPlayer(player, true, false), currentPosX, currentPosY, false, false, hardcore);
                     }
-                    this.renderHeart(poseStack, HeartType.forPlayer(player, true, orange), currentPosX, currentPosY, false, halfHeart, hardcore);
+                    this.renderHeart(guiGraphics, HeartType.forPlayer(player, true, orange), currentPosX, currentPosY, false, halfHeart, hardcore);
                 }
             }
 
@@ -99,25 +98,24 @@ public class HealthBarRenderer {
                 boolean halfHeart = currentHeart * 2 + 1 == (displayHealth - 1) % 20 + 1;
                 boolean orange = displayHealth > 20 && currentHeart * 2 + 1 <= (displayHealth - 1) % 20 + 1;
                 if (halfHeart && orange) {
-                    this.renderHeart(poseStack, HeartType.forPlayer(player, false, false), currentPosX, currentPosY, true, false, hardcore);
+                    this.renderHeart(guiGraphics, HeartType.forPlayer(player, false, false), currentPosX, currentPosY, true, false, hardcore);
                 }
-                this.renderHeart(poseStack, HeartType.forPlayer(player, false, orange || OverflowingBars.CONFIG.get(ClientConfig.class).health.colorizeFirstRow && currentHeart * 2 + 1 <= (displayHealth - 1) % 20 + 1), currentPosX, currentPosY, true, halfHeart, hardcore);
+                this.renderHeart(guiGraphics, HeartType.forPlayer(player, false, orange || OverflowingBars.CONFIG.get(ClientConfig.class).health.colorizeFirstRow && currentHeart * 2 + 1 <= (displayHealth - 1) % 20 + 1), currentPosX, currentPosY, true, halfHeart, hardcore);
             }
 
             if (currentHeart * 2 < Math.min(20, currentHealth)) {
                 boolean halfHeart = currentHeart * 2 + 1 == (currentHealth - 1) % 20 + 1;
                 boolean orange = currentHealth > 20 && currentHeart * 2 + 1 <= (currentHealth - 1) % 20 + 1;
                 if (halfHeart && orange) {
-                    this.renderHeart(poseStack, HeartType.forPlayer(player, false, false), currentPosX, currentPosY, false, false, hardcore);
+                    this.renderHeart(guiGraphics, HeartType.forPlayer(player, false, false), currentPosX, currentPosY, false, false, hardcore);
                 }
-                this.renderHeart(poseStack, HeartType.forPlayer(player, false, orange || OverflowingBars.CONFIG.get(ClientConfig.class).health.colorizeFirstRow && currentHeart * 2 + 1 <= (currentHealth - 1) % 20 + 1), currentPosX, currentPosY, false, halfHeart, hardcore);
+                this.renderHeart(guiGraphics, HeartType.forPlayer(player, false, orange || OverflowingBars.CONFIG.get(ClientConfig.class).health.colorizeFirstRow && currentHeart * 2 + 1 <= (currentHealth - 1) % 20 + 1), currentPosX, currentPosY, false, halfHeart, hardcore);
             }
         }
     }
 
-    private void renderHeart(PoseStack poseStack, HeartType heartType, int posX, int posY, boolean blink, boolean halfHeart, boolean hardcore) {
-        heartType.setIconsSheet();
-        GuiComponent.blit(poseStack, posX, posY, heartType.getX(halfHeart, blink), heartType.getY(hardcore), 9, 9, 256, 256);
+    private void renderHeart(GuiGraphics guiGraphics, HeartType heartType, int posX, int posY, boolean blink, boolean halfHeart, boolean hardcore) {
+        guiGraphics.blit(heartType.textureSheet, posX, posY, heartType.getX(halfHeart, blink), heartType.getY(hardcore), 9, 9);
     }
 
     enum HeartType {
@@ -129,16 +127,14 @@ public class HealthBarRenderer {
         FROZEN(9, false),
         ORANGE(0, 3, 4, BarOverlayRenderer.OVERFLOWING_ICONS_LOCATION, true);
 
-        private static ResourceLocation lastIconsSheet;
-
         private final int textureIndexX;
         private final int textureIndexY;
         private final int hardcoreIndexY;
-        private final ResourceLocation textureSheet;
+        public final ResourceLocation textureSheet;
         private final boolean canBlink;
 
         HeartType(int textureIndexX, boolean blink) {
-            this(textureIndexX, 0, 5, GuiComponent.GUI_ICONS_LOCATION, blink);
+            this(textureIndexX, 0, 5, BarOverlayRenderer.GUI_ICONS_LOCATION, blink);
         }
 
         HeartType(int textureIndexX, int textureIndexY, int hardcoreIndexY, ResourceLocation textureSheet, boolean blink) {
@@ -164,13 +160,6 @@ public class HealthBarRenderer {
 
         public int getY(boolean hardcore) {
             return (hardcore ? this.hardcoreIndexY : this.textureIndexY) * 9;
-        }
-
-        public void setIconsSheet() {
-            if (this.textureSheet != lastIconsSheet) {
-                RenderSystem.setShaderTexture(0, this.textureSheet);
-                lastIconsSheet = this.textureSheet;
-            }
         }
 
         public static HeartType forPlayer(Player player, boolean absorbing, boolean orange) {
