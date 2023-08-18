@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 @Mixin(ChatComponent.class)
 abstract class ChatComponentMixin {
 
-    @ModifyVariable(method = "screenToChatY", at = @At(value = "LOAD", ordinal = 0), ordinal = 0, argsOnly = true)
+    @ModifyVariable(method = {"getClickedComponentStyleAt", "handleChatQueueClicked"}, at = @At(value = "LOAD", ordinal = 0), ordinal = 1, argsOnly = true)
     private double screenToChatY(double mouseY) {
         if (!OverflowingBars.CONFIG.get(ClientConfig.class).moveChatAboveArmor) return mouseY;
         return mouseY + ChatOffsetHelper.getChatOffsetY();
