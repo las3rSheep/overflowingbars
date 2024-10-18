@@ -30,7 +30,7 @@ public class BarOverlayRenderer {
             int maxAbsorption = (20 - Mth.ceil(Math.min(20, allHearts) / 2.0F)) * 2;
             RowCountRenderer.drawBarRowCount(poseStack, posX - 2, posY - 10, Mth.ceil(player.getAbsorptionAmount()), true, maxAbsorption, minecraft.font);
             if (showMax) {
-                RowCountRenderer.drawBarRowCount(poseStack, posX - 2, posY + 10, (int) Mth.ceil(player.getMaxHealth()), true, minecraft.font);
+                RowCountRenderer.drawBarRowCount(poseStack, posX - 2, posY + 10, Mth.ceil(player.getMaxHealth()), true, minecraft.font);
             }
         }
     }
