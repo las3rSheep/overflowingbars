@@ -56,7 +56,7 @@ public class ClientConfig implements ConfigCore {
         public boolean alwaysRenderRowCount = false;
         @Config(description = "Render an 'x' together with the row count number.")
         public boolean rowCountX = true;
-        @Config(description = "Render an 'x' together with the row count number.")
-        public boolean countHPInstead = false;
+        @Config(description = "Render the total value instead of a row count.")
+        public boolean showNumberInstead = false;
     }
 }
