@@ -15,6 +15,10 @@ public class BarOverlayRenderer {
     static final ResourceLocation OVERFLOWING_ICONS_LOCATION = new ResourceLocation(OverflowingBars.MOD_ID, "textures/gui/icons.png");
 
     public static void renderHealthLevelBars(PoseStack poseStack, int screenWidth, int screenHeight, Minecraft minecraft, int leftHeight, boolean rowCount) {
+        renderHealthLevelBars(poseStack, screenWidth, screenHeight, minecraft, leftHeight, rowCount, false)
+    }
+    
+    public static void renderHealthLevelBars(PoseStack poseStack, int screenWidth, int screenHeight, Minecraft minecraft, int leftHeight, boolean rowCount, boolean showMax) {
         Player player = getCameraPlayer(minecraft);
         if (player == null) return;
         int posX = screenWidth / 2 - 91;
@@ -25,6 +29,9 @@ public class BarOverlayRenderer {
             RowCountRenderer.drawBarRowCount(poseStack, posX - 2, posY, allHearts, true, minecraft.font);
             int maxAbsorption = (20 - Mth.ceil(Math.min(20, allHearts) / 2.0F)) * 2;
             RowCountRenderer.drawBarRowCount(poseStack, posX - 2, posY - 10, Mth.ceil(player.getAbsorptionAmount()), true, maxAbsorption, minecraft.font);
+            if (showMax) {
+                RowCountRenderer.drawBarRowCount(poseStack, posX - 2, posY + 10, (int) Mth.ceil(player.getMaxHealth()), true, minecraft.font);
+            }
         }
     }
 
