@@ -26,9 +26,9 @@ public class RowCountRenderer {
         if (!config.rowCount.alwaysRenderRowCount && rowCount <= 1.0F) return;
         int numberValue;
         if (config.rowCount.countFullRowsOnly) {
-            numberValue = Mth.floor(rowCount);
+            numberValue = Mth.floor(config.rowCount.showNumberInstead ? barValue : rowCount);
         } else {
-            numberValue = Mth.ceil(rowCount);
+            numberValue = Mth.ceil(config.rowCount.showNumberInstead ? barValue : rowCount);
         }
         int textColor = config.rowCount.rowCountColor.getColor();
         if (config.rowCount.forceFontRenderer) {
