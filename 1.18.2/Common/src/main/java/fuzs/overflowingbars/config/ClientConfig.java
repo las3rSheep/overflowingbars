@@ -58,5 +58,7 @@ public class ClientConfig implements ConfigCore {
         public boolean rowCountX = true;
         @Config(description = "Render the total value instead of a row count.")
         public boolean showNumberInstead = false;
+        @Config(description = "Render the maximum row count/value for health too.")
+        public boolean showMaxHP = false;
     }
 }
