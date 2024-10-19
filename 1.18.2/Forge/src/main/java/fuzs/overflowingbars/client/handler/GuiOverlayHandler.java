@@ -40,7 +40,7 @@ public class GuiOverlayHandler {
             ForgeIngameGui gui = ((ForgeIngameGui) minecraft.gui);
             if (!minecraft.options.hideGui && gui.shouldDrawSurvivalElements()) {
                 RenderSystem.enableBlend();
-                BarOverlayRenderer.renderHealthLevelBars(evt.getMatrixStack(), evt.getWindow().getGuiScaledWidth(), evt.getWindow().getGuiScaledHeight(), minecraft, gui.left_height, OverflowingBars.CONFIG.get(ClientConfig.class).health.allowCount);
+                BarOverlayRenderer.renderHealthLevelBars(evt.getMatrixStack(), evt.getWindow().getGuiScaledWidth(), evt.getWindow().getGuiScaledHeight(), minecraft, gui.left_height, OverflowingBars.CONFIG.get(ClientConfig.class).health.allowCount, OverflowingBars.CONFIG.get(ClientConfig.class).health.showMaxHP);
                 RenderSystem.disableBlend();
                 gui.left_height += ChatOffsetHelper.twoHealthRows(minecraft.player) ? 20 : 10;
             }
